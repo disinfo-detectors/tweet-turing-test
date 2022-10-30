@@ -1,3 +1,11 @@
+# tweet-turing-test
+key
+.key
+.vscode
+tests
+data/
+
+# Boilerplate .gitignore file from here down
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

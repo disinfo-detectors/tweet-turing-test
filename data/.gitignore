@@ -1,0 +1,4 @@
+# exclude all data from GitHub repo
+*
+*/
+!.gitignore

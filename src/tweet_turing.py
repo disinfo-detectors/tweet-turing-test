@@ -26,14 +26,14 @@ logger = logging.getLogger(__name__)
 
 
 # functions
-def get_files(path: str = "./data/") -> list[str]:
+def get_json_files(path: str = "./data/") -> list[str]:
     '''TODO description'''
-    # get list of files in directory
+    # get list of JSON files in directory
     file_list: list[str] = []
     try:
         file_list= os.listdir(path)
     except FileNotFoundError:
-        logger.exception(f"get_files(): provided path could not be found. path='{path}'")
+        logger.exception(f"get_json_files(): provided path could not be found. path='{path}'")
         return -1
 
     # create list to store only json files
@@ -41,7 +41,12 @@ def get_files(path: str = "./data/") -> list[str]:
 
     for f in file_list:
         if f.endswith('.json'):
-            json_files.append(f)
+            if (path[-1] not in ["/", "\\"]):   # check if path includes a trailing slash
+                trailing_slash = "/"            # TODO: expand for windows backslashes?
+            else:
+                trailing_slash = ""
+
+            json_files.append(f"{path}{trailing_slash}{f}")
     
     return json_files
 
@@ -70,6 +75,52 @@ def merge_json_files(file_list: list[str], output_filehandle = None) -> list[dir
     
     # return the result
     return result
+
+
+# TODO -> could combine this function with get_json_files, make file extension an argument
+def get_csv_files(path: str = "./data/") -> list[str]:
+    '''TODO description'''
+    # get list of CSV files in directory
+    file_list: list[str] = []
+    try:
+        file_list= os.listdir(path)
+    except FileNotFoundError:
+        logger.exception(f"get_csv_files(): provided path could not be found. path='{path}'")
+        return -1
+
+    # create list to store only csv files
+    csv_files: list[str] = []
+
+    for f in file_list:
+        if f.endswith('.csv'):
+            if (path[-1] not in ["/", "\\"]):   # check if path includes a trailing slash
+                trailing_slash = "/"            # TODO: expand for windows backslashes?
+            else:
+                trailing_slash = ""
+
+            csv_files.append(f"{path}{trailing_slash}{f}")
+    
+    return csv_files
+
+
+def merge_csv_files(file_list: list[str]) -> pd.DataFrame:
+    """TODO description"""
+    # check for no files in file_list
+    if (len(file_list) == 0):
+        return None
+    
+    # create dataframe of first CSV
+    csv_df: pd.DataFrame = pd.read_csv(file_list[0], encoding='utf-8', low_memory=False)
+
+    # now load and concatenate onto that csv_df as we go
+    if (len(file_list) == 1):
+        return csv_df
+
+    for file in file_list[1:]:
+        new_df: pd.DataFrame = pd.read_csv(file, encoding='utf-8')
+        csv_df = pd.concat([csv_df, new_df])
+
+    return csv_df
 
 
 def get_gcp_storage_client(project_name: str = "ds-capstone-jmmr", credentials = None):

@@ -2,7 +2,6 @@
 #   A collection of functions used for the acquisition and pre-processing
 #   pipeline for the Tweet Turing Test project.
 #
-#   Suggested use: `import tweet_turing as tt`
 
 # imports from Python standard library
 import json

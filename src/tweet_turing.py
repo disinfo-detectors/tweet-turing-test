@@ -50,7 +50,7 @@ def get_json_files(path: str = "./data/") -> list[str]:
     return json_files
 
 
-def merge_json_files(file_list: list[str], output_filehandle = None) -> list[dir]:
+def merge_json_files(file_list: list[str], output_filehandle = None) -> list[dict]:
     """TODO description"""
     # initialize empty lists
     result: list[dict] = []
@@ -153,7 +153,10 @@ def list_gcp_objects(storage_client: storage.Client, bucket_name: str = "disinfo
     """TODO: description"""
     # according to docs, `Bucket.list_blobs(...)` is deprecated, 
     #   with `Client.list_blobs()` called out as its replacement
-    return storage_client.list_blobs(bucket_or_name=bucket_name, prefix=obj_prefix)
+    blob_list = storage_client.list_blobs(bucket_or_name=bucket_name, prefix=obj_prefix)
+    blob_list_str = [obj.name for obj in blob_list if (obj.name != obj_prefix)]
+
+    return blob_list_str
 
 
 def get_gcp_object_as_json(bucket: storage.Bucket, object_name: str) -> list[dict]:

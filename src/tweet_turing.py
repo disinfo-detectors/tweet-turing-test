@@ -122,20 +122,76 @@ def merge_csv_files(file_list: list[str]) -> pd.DataFrame:
     return csv_df
 
 
-def get_gcp_storage_client(project_name: str = "ds-capstone-jmmr", credentials = None):
-    pass    # plan to return a storage client, authenticate with supplied credentials
+def get_gcp_storage_client(project_name: str = "ds-capstone-jmmr", 
+                            key_file: str = "../key/service_acct_key.json") -> storage.Client:
+    """Creates and returns a storage client object for use with the Google Cloud Storage 
+        client library. Enables access to cloud storage buckets within the specified `project_name`.
+        Authenticates with the supplied service account key in `key_file`."""
+    credentials: service_account.Credentials = None
+    
+    try:
+        credentials = service_account.Credentials.from_service_account_file(key_file)
+    except FileNotFoundError:
+        logger.exception(f"get_gcp_storage_client(): provided key_file could not be found. key_file='{key_file}'")
+        return -1
+    except ValueError:
+        logger.exception(f"get_gcp_storage_client(): provided key_file didn't use correct format. key_file='{key_file}'")
+        return -1
+    
+    storage_client: storage.Client = storage.Client(project=project_name, credentials=credentials)
+
+    return storage_client
 
 
-def get_gcp_bucket(bucket_name: str = "disinfo-detector-tweet-turing-test"):
-    pass    # plan to return the bucket object
+def get_gcp_bucket(storage_client: storage.Client, bucket_name: str = "disinfo-detector-tweet-turing-test") -> storage.Bucket:
+    """TODO: description"""
+    return storage_client.get_bucket(bucket_name)
 
 
-def list_gcp_objects(bucket, prefix: str = "") -> list[str]:
-    pass    # plan to return the list of objects in bucket with provided prefix
+def list_gcp_objects(storage_client: storage.Client, bucket_name: str = "disinfo-detector-tweet-turing-test", 
+                        obj_prefix: str = "") -> list[str]:
+    """TODO: description"""
+    # according to docs, `Bucket.list_blobs(...)` is deprecated, 
+    #   with `Client.list_blobs()` called out as its replacement
+    return storage_client.list_blobs(bucket_or_name=bucket_name, prefix=obj_prefix)
 
 
-def get_gcp_object_as_json(bucket, object_name: str) -> list[dict]:
-    pass    # plan to get object as blob, download as text, then json.loads to return json
+def get_gcp_object_as_json(bucket: storage.Bucket, object_name: str) -> list[dict]:
+    """TODO: description"""
+    gcp_object: storage.Blob = bucket.get_blob(object_name)
+
+    if (gcp_object == None):
+        return None
+    
+    gcp_object_text: str = gcp_object.download_as_text()
+
+    return json.loads(gcp_object_text)
+
+
+def get_gcp_object_as_text(bucket: storage.Bucket, object_name: str) -> str:
+    """TODO: description"""
+    gcp_object: storage.Blob = bucket.get_blob(object_name)
+
+    if (gcp_object == None):
+        return None
+    
+    gcp_object_text: str = gcp_object.download_as_text()
+
+    return gcp_object_text
+
+
+def merge_gcp_json_files(bucket: storage.Bucket, object_list: list[str]) -> list[dict]:
+    # initialize empty lists
+    result: list[dict] = []
+    json_data: list[dict] = []
+
+    # iterate over file_list, extending list `result`
+    for obj in object_list:
+        json_data = get_gcp_object_as_json(bucket=bucket, object_name=obj)
+        result.extend(json_data)
+    
+    # return the result
+    return result
 
 
 if __name__ == '__main__':

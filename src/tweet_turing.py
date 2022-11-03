@@ -25,10 +25,10 @@ logger = logging.getLogger(__name__)
 
 
 # functions
-def get_json_files(path: str = "./data/") -> list[str]:
+def get_json_files(path: str = "./data/"):
     '''TODO description'''
     # get list of JSON files in directory
-    file_list: list[str] = []
+    file_list = []
     try:
         file_list= os.listdir(path)
     except FileNotFoundError:
@@ -36,7 +36,7 @@ def get_json_files(path: str = "./data/") -> list[str]:
         return -1
 
     # create list to store only json files
-    json_files: list[str] = []
+    json_files = []
 
     for f in file_list:
         if f.endswith('.json'):
@@ -50,11 +50,11 @@ def get_json_files(path: str = "./data/") -> list[str]:
     return json_files
 
 
-def merge_json_files(file_list: list[str], output_filehandle = None) -> list[dict]:
+def merge_json_files(file_list, output_filehandle = None):
     """TODO description"""
     # initialize empty lists
-    result: list[dict] = []
-    json_data: list[dict] = []
+    result = []
+    json_data = []
 
     # iterate over file_list, extending list `result`
     for f in file_list:
@@ -77,10 +77,10 @@ def merge_json_files(file_list: list[str], output_filehandle = None) -> list[dic
 
 
 # TODO -> could combine this function with get_json_files, make file extension an argument
-def get_csv_files(path: str = "./data/") -> list[str]:
+def get_csv_files(path: str = "./data/"):
     '''TODO description'''
     # get list of CSV files in directory
-    file_list: list[str] = []
+    file_list = []
     try:
         file_list= os.listdir(path)
     except FileNotFoundError:
@@ -88,7 +88,7 @@ def get_csv_files(path: str = "./data/") -> list[str]:
         return -1
 
     # create list to store only csv files
-    csv_files: list[str] = []
+    csv_files = []
 
     for f in file_list:
         if f.endswith('.csv'):
@@ -102,7 +102,7 @@ def get_csv_files(path: str = "./data/") -> list[str]:
     return csv_files
 
 
-def merge_csv_files(file_list: list[str]) -> pd.DataFrame:
+def merge_csv_files(file_list) -> pd.DataFrame:
     """TODO description"""
     # check for no files in file_list
     if (len(file_list) == 0):
@@ -149,7 +149,7 @@ def get_gcp_bucket(storage_client: storage.Client, bucket_name: str = "disinfo-d
 
 
 def list_gcp_objects(storage_client: storage.Client, bucket_name: str = "disinfo-detector-tweet-turing-test", 
-                        obj_prefix: str = "") -> list[str]:
+                        obj_prefix: str = ""):
     """TODO: description"""
     # according to docs, `Bucket.list_blobs(...)` is deprecated, 
     #   with `Client.list_blobs()` called out as its replacement
@@ -159,7 +159,7 @@ def list_gcp_objects(storage_client: storage.Client, bucket_name: str = "disinfo
     return blob_list_str
 
 
-def get_gcp_object_as_json(bucket: storage.Bucket, object_name: str) -> list[dict]:
+def get_gcp_object_as_json(bucket: storage.Bucket, object_name: str):
     """TODO: description"""
     gcp_object: storage.Blob = bucket.get_blob(object_name)
 
@@ -183,10 +183,10 @@ def get_gcp_object_as_text(bucket: storage.Bucket, object_name: str) -> str:
     return gcp_object_text
 
 
-def merge_gcp_json_files(bucket: storage.Bucket, object_list: list[str]) -> list[dict]:
+def merge_gcp_json_files(bucket: storage.Bucket, object_list):
     # initialize empty lists
-    result: list[dict] = []
-    json_data: list[dict] = []
+    result = []
+    json_data = []
 
     # iterate over file_list, extending list `result`
     for obj in object_list:

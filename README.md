@@ -1,6 +1,6 @@
 # Tweet Turing Test: Detecting disinformation on Twitter
 
-**Capstone Project for Master of Science in Data Science  - Fall 2022
+**Capstone Project for Master of Science in Data Science  - Fall 2022  
 _College of Computing and Informatics - Drexel University - Philadelphia, PA USA_**
 
 **Group Members:**

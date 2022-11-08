@@ -183,6 +183,17 @@ def get_gcp_object_as_text(bucket: storage.Bucket, object_name: str) -> str:
     return gcp_object_text
 
 
+def set_gcp_object_from_json(bucket: storage.Bucket, object_name: str, json_data: dict) -> None:
+    """TODO: description"""
+    new_blob: storage.Blob = bucket.blob(object_name)
+    
+    # check if blob exists already
+    if (new_blob.exists()):
+        pass    # do nothing, overwrite old version
+    
+    new_blob.upload_from_string(json.dumps(json_data))
+
+
 def merge_gcp_json_files(bucket: storage.Bucket, object_list):
     # initialize empty lists
     result = []

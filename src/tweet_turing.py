@@ -116,7 +116,7 @@ def merge_csv_files(file_list) -> pd.DataFrame:
         return csv_df
 
     for file in file_list[1:]:
-        new_df: pd.DataFrame = pd.read_csv(file, encoding='utf-8')
+        new_df: pd.DataFrame = pd.read_csv(file, encoding='utf-8', low_memory=False)
         csv_df = pd.concat([csv_df, new_df])
 
     return csv_df
@@ -145,6 +145,11 @@ def get_gcp_storage_client(project_name: str = "ds-capstone-jmmr",
 
 def get_gcp_bucket(storage_client: storage.Client, bucket_name: str = "disinfo-detector-tweet-turing-test") -> storage.Bucket:
     """TODO: description"""
+    if (type(storage_client) == int):
+        # indicates `get_gcp_storage_client()` had an error
+        logger.exception(f"get_gcp_bucket(): provided storage_client had an issue. storage_client='{storage_client}'")
+        return -1
+    
     return storage_client.get_bucket(bucket_name)
 
 
@@ -159,7 +164,7 @@ def list_gcp_objects(storage_client: storage.Client, bucket_name: str = "disinfo
     return blob_list_str
 
 
-def get_gcp_object_as_json(bucket: storage.Bucket, object_name: str):
+def get_gcp_object_as_json(bucket: storage.Bucket, object_name: str) -> dict:
     """TODO: description"""
     gcp_object: storage.Blob = bucket.get_blob(object_name)
 
@@ -183,7 +188,35 @@ def get_gcp_object_as_text(bucket: storage.Bucket, object_name: str) -> str:
     return gcp_object_text
 
 
-def merge_gcp_json_files(bucket: storage.Bucket, object_list):
+def get_gcp_object_as_blob(bucket: storage.Bucket, object_name: str) -> storage.Blob:
+    """TODO: description"""
+    return bucket.blob(object_name)    # using .blob() instead of .get_blob() to avoid downloading too early
+
+
+def merge_gcp_csv_files(bucket: storage.Bucket, object_list: list) -> pd.DataFrame:
+    """TODO: description"""
+    # check for no files in file_list
+    if (len(object_list) == 0):
+        return None
+    
+    # create dataframe of first CSV
+    this_blob: storage.Blob = get_gcp_object_as_blob(bucket, object_list[0])
+    csv_df: pd.DataFrame = pd.read_csv(this_blob.open("r", encoding='utf-8'), encoding='utf-8', low_memory=False)
+    
+    # now load and concatenate onto that csv_df as we go
+    if (len(object_list) == 1):
+        return csv_df
+
+    for obj in object_list[1:]:
+        this_blob = get_gcp_object_as_blob(bucket, obj)
+        new_df: pd.DataFrame = pd.read_csv(this_blob.open("r", encoding='utf-8'), encoding='utf-8', low_memory=False)
+        csv_df = pd.concat([csv_df, new_df])
+
+    return csv_df
+
+
+def merge_gcp_json_files(bucket: storage.Bucket, object_list: list):
+    """TODO: description"""
     # initialize empty lists
     result = []
     json_data = []

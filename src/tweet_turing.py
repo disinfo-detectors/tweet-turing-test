@@ -50,7 +50,27 @@ def get_json_files(path: str = "./data/"):
     return json_files
 
 
-def merge_json_files(file_list, output_filehandle = None):
+def load_local_json(filepath: str, encoding: str = 'utf-8') -> list:
+    """Loads a local JSON file. Default encoding is 'utf-8'.
+        Returns a list of dicts representing the JSON data."""
+    json_data: list = []
+
+    try:
+        with open(file=filepath, mode='r', encoding=encoding) as json_file_handle:
+            json_data = json.load(json_file_handle)
+    except Exception:
+        logger.exception(f"load_local_json(): error loading JSON from file '{filepath}'")
+        return -1
+
+    return json_data
+
+
+def load_gcp_json(bucket: storage.Bucket, object_name: str):
+    """Wrapper for get_gcp_object_as_json."""
+    return get_gcp_object_as_json(bucket=bucket, object_name=object_name)
+
+
+def merge_json_files(file_list, output_filehandle = None) -> list:
     """TODO description"""
     # initialize empty lists
     result = []
@@ -228,6 +248,20 @@ def merge_gcp_json_files(bucket: storage.Bucket, object_list: list):
     
     # return the result
     return result
+
+
+def set_gcp_object_from_json(bucket: storage.Bucket, object_name: str, json_data: dict) -> None:
+    """TODO: description"""
+    new_blob: storage.Blob = bucket.blob(object_name)
+
+    # check if blob already exists
+    if (new_blob.exists()):
+        pass    # do nothing, overwrite old version
+
+    new_blob.upload_from_string(json.dumps(json_data))
+
+
+
 
 
 if __name__ == '__main__':

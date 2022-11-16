@@ -25,6 +25,11 @@ logger = logging.getLogger(__name__)
 
 
 # functions
+####################################
+#### MERGING AND FILE FUNCTIONS ####
+####################################
+
+
 def get_json_files(path: str = "./data/"):
     '''TODO description'''
     # get list of JSON files in directory
@@ -261,7 +266,26 @@ def set_gcp_object_from_json(bucket: storage.Bucket, object_name: str, json_data
     new_blob.upload_from_string(json.dumps(json_data))
 
 
+#################################
+#### PREPROCESSING FUNCTIONS ####
+#################################
 
+
+def is_retweet(tweet_series: pd.Series) -> int:
+    """Classifies a tweet as a retweet or not based on field `text`.
+        Returns 1 if a provided tweet (as pandas Series) is a retweet, returns 0 otherwise.
+        Intended to be applied as a mapped function to derive a new dataset feature."""
+    # method 1
+    return int(tweet_series['text'].startswith('RT @'))
+
+
+def is_retweet_alt(tweet_series: pd.Series) -> int:
+    """Uses an alternate method for determining retweet classification.
+        Assumes upstream filter step is performed to remove "NaN" values in field `referenced_tweets`.
+        Returns 1 if a provided tweet (as pandas Series) is a retweet, returns 0 otherwise.
+        Intended to be applied as a mapped function to derive a new dataset feature."""
+    # method 2
+    return int(tweet_series['referenced_tweets'][0]['type'] == 'retweeted')
 
 
 if __name__ == '__main__':

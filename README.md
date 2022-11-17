@@ -11,13 +11,16 @@ _College of Computing and Informatics - Drexel University - Philadelphia, PA USA
 
 ## About the Project
 Placeholder text for a nice group of sentences (a paragraph even!?) about the project.
+
 ### Status
 This project is still in active development. Data acquisition and pre-processing will be completed during Q4 CY2022, while analysis and modeling will be completed during Q1 CY2023.
 
 ## Requirements
+
 ### Environment
 The environments used for this project have:
-- Python 3.9+
+- Python 3.7+
+- Packages consistent with the included `requirements.txt` file.
 
 ### Packages
 The Python packages listed below are used to accomplish various portions of our project. Additional packages from the Python standard library are used but are not listed here.
@@ -25,6 +28,7 @@ The Python packages listed below are used to accomplish various portions of our 
 - NLTK
 - Numpy
 - Pandas
+- Pyarrow (for Apache Parquet support)
 
 ## License
 (can't distribute the data, confirm license options from Twitter TOS)

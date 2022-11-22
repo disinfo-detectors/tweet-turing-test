@@ -343,6 +343,29 @@ def set_gcp_object_from_json(bucket: storage.Bucket, object_name: str, json_data
         pass    # do nothing, overwrite old version
 
     new_blob.upload_from_string(json.dumps(json_data))
+    
+    
+def set_gcp_object_from_df_as_parq(bucket: storage.Bucket, object_name: str, df: pd.DataFrame) -> None:
+    """TODO: description"""
+    new_blob: storage.Blob = bucket.blob(object_name)
+
+    # check if blob already exists
+    if (new_blob.exists()):
+        pass    # do nothing, overwrite old version
+
+    df.to_parquet(new_blob.open("wb"), engine='pyarrow', index=False)
+    
+
+def get_gcp_object_from_parq_as_df(bucket: storage.Bucket, object_name: str) -> pd.DataFrame:
+    """TODO: description"""
+    gcp_object: storage.Blob = get_gcp_object_as_blob(bucket=bucket, object_name=object_name)
+    
+    if (gcp_object == None):
+        return None
+    
+    new_df: pd.DataFrame = pd.read_parquet(gcp_object.open("rb"), engine='pyarrow')
+    
+    return new_df
 
 
 #################################

@@ -32,7 +32,7 @@ gcp_data_paths = {
 gcp_snapshot_paths = {
     "json_snapshot": "snapshot/",
     "csv_snapshot": "snapshot/",
-    "parq_snapshot": "../data/snapshot/"
+    "parq_snapshot": "snapshot/"
 }
 
 gcp_project_name: str = "ds-capstone-jmmr"

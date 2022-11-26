@@ -4,10 +4,14 @@
 #   
 #   Original library: https://github.com/twitter/twitter-text/tree/master/java/src/main/java/com/twitter/twittertext
 #
-#   WORK IN PROGRESS
+#   Also includes a function from external package `tweet_counter` to count the characters of a tweet.
 
 
 import re
+from tweet_counter import count_tweet   
+    # Source: https://github.com/nottrobin/tweet-counter
+    #   Version: 0.1.0
+    #   Note: on Windows, above package requires manual installation (`pip install` generates error)
 
 
 # constants
@@ -29,7 +33,7 @@ UNICODE_SPACES: str = "".join([
     "]"
   ])
 
-
+#   based on Regex.DIRECTIONAL_CHARACTERS
 DIRECTIONAL_CHARACTERS: str = "".join([
     "\u061C",   # ARABIC LETTER MARK (ALM)
     "\u200E",   # LEFT-TO-RIGHT MARK (LRM)
@@ -45,23 +49,36 @@ DIRECTIONAL_CHARACTERS: str = "".join([
     "\u2069",   # POP DIRECTIONAL ISOLATE (PDI)
     ])
 
-
+#   based on Regex.AT_SIGNS_CHAR and Regex.AT_SIGNS
 AT_SIGNS: str = "[@\uFF20]"
 
 
 #   VALID_REPLY regex pattern
-#     Java: VALID_REPLY = Pattern.compile("^(?:" + UNICODE_SPACES + "|" + DIRECTIONAL_CHARACTERS + ")*" + AT_SIGNS + "([a-z0-9_]{1,20})", Pattern.CASE_INSENSITIVE);
+#   Java: `VALID_REPLY = Pattern.compile("^(?:" + UNICODE_SPACES + "|" + DIRECTIONAL_CHARACTERS + ")*" + AT_SIGNS + "([a-z0-9_]{1,20})", Pattern.CASE_INSENSITIVE);`
 VALID_REPLY_PATTERN_STR = "^(?:" + UNICODE_SPACES + "|" + DIRECTIONAL_CHARACTERS + ")*" + AT_SIGNS + "([a-z0-9_]{1,20})"
 VALID_REPLY_PATTERN = re.compile(VALID_REPLY_PATTERN_STR, flags=re.IGNORECASE)
 
 
 # functions
 def extract_reply_screenname(tweet_text: str):
+    """Returns the handle, including `@`, occuring at start of a tweet (i.e. when a tweet is replying to another).
+        Returns None if anything but a handle is at the very start of a tweet.
+        Regex based on Twitter's `twittertext` code."""
     return VALID_REPLY_PATTERN.match(tweet_text)    # seems to work, may consider "search" but "match" looks only at start of string
 
 
 def extract_first_handle_after_RT(tweet_text: str):
+    """Returns the handle, including `@`, occuring at start of a tweet but after chars 'RT ' (note the trailing space).
+        Returns None if anything but 'RT ' followed by a handle is at the very start of a tweet.
+        Note that check for 'RT ' is expected to be performed prior to calling this function.
+        Regex based on Twitter's `twittertext` code."""
     return VALID_REPLY_PATTERN.search(tweet_text[3:])   # seems to work
+
+
+def get_tweet_char_count(tweet_text: str) -> int:
+    """Counts the number of characters in a Tweet using an approximation of the method used by Twitter.
+        Twitter determines character count using a very specific approach: https://developer.twitter.com/en/docs/counting-characters"""
+    return count_tweet(tweet_text)
 
 
 if __name__ == '__main__':

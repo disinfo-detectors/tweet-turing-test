@@ -18,6 +18,9 @@ import demoji                               # pip install demoji
 import numpy as np                          # pip install numpy
 import pandas as pd                         # pip install pandas
 
+# additional scripts
+import twittertext
+
 
 # module-level definitions
 logging.basicConfig(level=logging.WARNING)
@@ -407,6 +410,31 @@ def convert_emoji_list(tweet_series: pd.Series) -> list:
 def emoji_count(tweet_series: pd.Series) -> int:
     """TODO: description"""
     return len(tweet_series['emoji_text'])
+
+
+def char_count(tweet_series: pd.Series) -> int:
+    """Counts the number of characters in a tweet using an approximation of Twitter's specific counting method."""
+    return twittertext.get_tweet_char_count(tweet_series['content'])
+
+
+def retweet_handle(tweet_series: pd.Series) -> str:
+    """Returns the Twitter handle of the parent author of a retweeted tweet.
+        E.g. if @foo is retweeting a tweet by @bar with the text `RT @bar What is your name?`, returns `bar`."""
+    handle: str = twittertext.extract_first_handle_after_RT(tweet_series['content'])
+    if (handle is None):
+        return None
+    else:
+        return handle.lstrip('@')
+
+
+def reply_handle(tweet_series: pd.Series) -> str:
+    """Returns the Twitter handle of the parent author of a reply tweet.
+        E.g. if @foo is replying to a tweet by @bar with the text `@bar What is your quest?`, returns `bar`."""
+    handle: str = twittertext.extract_reply_screenname(tweet_series['content'])
+    if (handle is None):
+        return None
+    else:
+        return handle.lstrip('@')
 
 
 if __name__ == '__main__':

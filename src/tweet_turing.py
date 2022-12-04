@@ -375,22 +375,22 @@ def get_gcp_object_from_parq_as_df(bucket: storage.Bucket, object_name: str) -> 
 #### PREPROCESSING FUNCTIONS ####
 #################################
 
-
 def is_retweet(tweet_series: pd.Series) -> int:
-    """Classifies a tweet as a retweet or not based on field `text`.
-        Returns 1 if a provided tweet (as pandas Series) is a retweet, returns 0 otherwise.
-        Intended to be applied as a mapped function to derive a new dataset feature."""
-    # method 1
-    return int(tweet_series['text'].startswith('RT @'))
-
-
-def is_retweet_alt(tweet_series: pd.Series) -> int:
-    """Uses an alternate method for determining retweet classification.
+    """Determines whether a tweet is a retweet.
         Assumes upstream filter step is performed to remove "NaN" values in field `referenced_tweets`.
         Returns 1 if a provided tweet (as pandas Series) is a retweet, returns 0 otherwise.
         Intended to be applied as a mapped function to derive a new dataset feature."""
-    # method 2
-    return int(tweet_series['referenced_tweets'][0]['type'] == 'retweeted')
+    return int(tweet_series['referenced_tweets'][0]['type'] in ['retweeted', 'quoted'])
+
+
+def get_post_type(tweet_series: pd.Series) -> str:
+    """Examines a tweet series, returns whether it is a generic tweet, a retweet, or a quote tweet"""
+    ref_twt = tweet_series['referenced_tweets']
+
+    if (ref_twt is None):
+        return None
+    else:
+        return ref_twt[0]['type']
 
 
 def has_url(tweet_series: pd.Series, search_str: str = 'http') -> int:

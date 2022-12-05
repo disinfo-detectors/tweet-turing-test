@@ -20,6 +20,7 @@ import pandas as pd                         # pip install pandas
 
 # additional scripts
 import twittertext
+import tldextract
 
 
 # module-level definitions
@@ -436,6 +437,17 @@ def reply_handle(tweet_series: pd.Series) -> str:
     else:
         return handle.lstrip('@')
 
+
+def explode_url(url_text: str) -> dict:
+    """TODO: Description"""
+    url_named_tuple: tldextract.ExtractResult = tldextract.extract(url_text)
+
+    return {
+            'subdomain': url_named_tuple.subdomain,
+            'domain': url_named_tuple.domain,
+            'tld': url_named_tuple.suffix,
+            'registered_domain': url_named_tuple.registered_domain
+        }
 
 if __name__ == '__main__':
     pass

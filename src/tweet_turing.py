@@ -20,6 +20,7 @@ import pandas as pd                         # pip install pandas
 
 # additional scripts
 import twittertext
+import tldextract
 
 
 # module-level definitions
@@ -436,6 +437,47 @@ def reply_handle(tweet_series: pd.Series) -> str:
     else:
         return handle.lstrip('@')
 
+
+def explode_url(url_text: str) -> dict:
+    """TODO: Description"""
+    url_named_tuple: tldextract.ExtractResult = tldextract.extract(url_text)
+
+    return {
+            'subdomain': url_named_tuple.subdomain,
+            'domain': url_named_tuple.domain,
+            'tld': url_named_tuple.suffix,
+            'registered_domain': url_named_tuple.registered_domain
+        }
+
+
+def capture_emojis_list(series_emojis):
+    ''' This function captures a list of emoji text (words) from a column in a dataframe'''
+    t=[]
+    for i in series_emojis:
+        if len(i) >1:
+            t.append(i)
+    return t
+
+
+def flatten_emoji_list(_2d_list):
+    ''' This function takes a nested list of emoji text and flattens the list for a dataframe'''
+    flat_list = []
+    for element in _2d_list:
+        if len(_2d_list)>0:
+            #print(element)
+            for item in element:
+                flat_list.append(item)
+        else:
+            #print('not list',element)
+            flat_list.append(element)
+    return flat_list
+
+
+def print_emoji_top_10(emoji_flat_list):
+    ''' This function takes a flattened list of emoji text and plot the value counts as a bar chart'''
+    flat_array = np.array((emoji_flat_list), dtype=object)
+    return pd.value_counts(flat_array).nlargest(10).plot(kind='barh',title='top 10 most frequently used emojis')
+    
 
 if __name__ == '__main__':
     pass

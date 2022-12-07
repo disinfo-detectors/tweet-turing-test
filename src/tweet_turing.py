@@ -28,7 +28,10 @@ logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
-# constants
+###################
+#### CONSTANTS ####
+###################
+
 csv_column_dtype_mapping: dict = {
     "external_author_id": "string",
     "author": "string",
@@ -82,14 +85,12 @@ authentic_df_eda_dtype_mapping = {
     }
 
 
-# functions
 ####################################
 #### MERGING AND FILE FUNCTIONS ####
 ####################################
 
-
-def get_json_files(path: str = "./data/"):
-    '''TODO description'''
+def get_json_files(path: str = "./data/") -> list:
+    """Used to generate a list of json files contained within a given path."""
     # get list of JSON files in directory
     file_list = []
     try:
@@ -129,7 +130,8 @@ def load_local_json(filepath: str, encoding: str = 'utf-8') -> list:
 
 
 def load_local_json_parquet(filepath: str, engine: str = 'pyarrow') -> list:
-    """TODO: description"""
+    """A wrapper for pandas `read_parquet` function.
+        Returns a list of dicts consistent with JSON format."""
     return pd.read_parquet(filepath, engine=engine)
 
 
@@ -139,7 +141,8 @@ def load_gcp_json(bucket: storage.Bucket, object_name: str):
 
 
 def merge_json_files(file_list, output_filehandle = None) -> list:
-    """TODO description"""
+    """Accepts a list of json files and concatenates them at the top-list level.
+        Returns a list of dicts consistent with JSON format."""
     # initialize empty lists
     result = []
     json_data = []
@@ -166,7 +169,7 @@ def merge_json_files(file_list, output_filehandle = None) -> list:
 
 # TODO -> could combine this function with get_json_files, make file extension an argument
 def get_csv_files(path: str = "./data/"):
-    '''TODO description'''
+    """Used to generate a list of CSV files contained within a given path."""
     # get list of CSV files in directory
     file_list = []
     try:
@@ -191,7 +194,9 @@ def get_csv_files(path: str = "./data/"):
 
 
 def merge_csv_files(file_list) -> pd.DataFrame:
-    """TODO description"""
+    """Accepts a list of csv files and concatenates them row-wise.
+        Expects columns to be identical schema between CSV files.
+        Returns a pandas DataFrame of the merged CSV data."""
     # check for no files in file_list
     if (len(file_list) == 0):
         return None
@@ -242,7 +247,7 @@ def get_gcp_storage_client(project_name: str = "ds-capstone-jmmr",
 
 
 def get_gcp_bucket(storage_client: storage.Client, bucket_name: str = "disinfo-detector-tweet-turing-test") -> storage.Bucket:
-    """TODO: description"""
+    """A wrapper for GCP's `get_bucket` function."""
     if (type(storage_client) == int):
         # indicates `get_gcp_storage_client()` had an error
         logger.exception(f"get_gcp_bucket(): provided storage_client had an issue. storage_client='{storage_client}'")
@@ -253,7 +258,7 @@ def get_gcp_bucket(storage_client: storage.Client, bucket_name: str = "disinfo-d
 
 def list_gcp_objects(storage_client: storage.Client, bucket_name: str = "disinfo-detector-tweet-turing-test", 
                         obj_prefix: str = ""):
-    """TODO: description"""
+    """Retrieves and returns a list of the objects/blobs within a given GCP cloud storage bucket."""
     # according to docs, `Bucket.list_blobs(...)` is deprecated, 
     #   with `Client.list_blobs()` called out as its replacement
     blob_list = storage_client.list_blobs(bucket_or_name=bucket_name, prefix=obj_prefix)
@@ -263,7 +268,8 @@ def list_gcp_objects(storage_client: storage.Client, bucket_name: str = "disinfo
 
 
 def get_gcp_object_as_json(bucket: storage.Bucket, object_name: str) -> dict:
-    """TODO: description"""
+    """Downloads the noted object from bucket and processes it as JSON text.
+        Returns a list of dicts consisent with JSON format."""
     gcp_object: storage.Blob = bucket.get_blob(object_name)
 
     if (gcp_object == None):
@@ -275,7 +281,8 @@ def get_gcp_object_as_json(bucket: storage.Bucket, object_name: str) -> dict:
 
 
 def get_gcp_object_as_text(bucket: storage.Bucket, object_name: str) -> str:
-    """TODO: description"""
+    """Downloads the noted object from bucket and processes it as plain text.
+        Returns the plain text as a string."""
     gcp_object: storage.Blob = bucket.get_blob(object_name)
 
     if (gcp_object == None):
@@ -287,12 +294,14 @@ def get_gcp_object_as_text(bucket: storage.Bucket, object_name: str) -> str:
 
 
 def get_gcp_object_as_blob(bucket: storage.Bucket, object_name: str) -> storage.Blob:
-    """TODO: description"""
+    """*References* (but does not download) the noted object from bucket..
+        Returns a storage.Blob object which can be opened like a file with Python's open(mode='rb')."""
     return bucket.blob(object_name)    # using .blob() instead of .get_blob() to avoid downloading too early
 
 
 def merge_gcp_csv_files(bucket: storage.Bucket, object_list: list) -> pd.DataFrame:
-    """TODO: description"""
+    """See `merge_csv_files`, this function performs the same task but on GCP objects
+        rather than local files."""
     # check for no files in file_list
     if (len(object_list) == 0):
         return None
@@ -324,7 +333,8 @@ def merge_gcp_csv_files(bucket: storage.Bucket, object_list: list) -> pd.DataFra
 
 
 def merge_gcp_json_files(bucket: storage.Bucket, object_list: list):
-    """TODO: description"""
+    """See `merge_json_files`, this function performs the same task but on GCP objects
+        rather than local files."""
     # initialize empty lists
     result = []
     json_data = []
@@ -339,7 +349,8 @@ def merge_gcp_json_files(bucket: storage.Bucket, object_list: list):
 
 
 def set_gcp_object_from_json(bucket: storage.Bucket, object_name: str, json_data: dict) -> None:
-    """TODO: description"""
+    """Similar function to a 'File>Save', but accepts JSON data and 
+        writes it to a GCP bucket."""
     new_blob: storage.Blob = bucket.blob(object_name)
 
     # check if blob already exists
@@ -350,7 +361,8 @@ def set_gcp_object_from_json(bucket: storage.Bucket, object_name: str, json_data
     
     
 def set_gcp_object_from_df_as_parq(bucket: storage.Bucket, object_name: str, df: pd.DataFrame) -> None:
-    """TODO: description"""
+    """Similar function to a 'File>Save', but accepts a pandas DataFrame and 
+        writes it to a GCP bucket."""
     new_blob: storage.Blob = bucket.blob(object_name)
 
     # check if blob already exists
@@ -361,7 +373,8 @@ def set_gcp_object_from_df_as_parq(bucket: storage.Bucket, object_name: str, df:
     
 
 def get_gcp_object_from_parq_as_df(bucket: storage.Bucket, object_name: str) -> pd.DataFrame:
-    """TODO: description"""
+    """Loads from a GCP cloud storage parquet file containing a pandas DataFrame.
+        Returns the DataFrame."""
     gcp_object: storage.Blob = get_gcp_object_as_blob(bucket=bucket, object_name=object_name)
     
     if (gcp_object == None):
@@ -395,7 +408,8 @@ def get_post_type(tweet_series: pd.Series) -> str:
 
 
 def has_url(tweet_series: pd.Series, search_str: str = 'http') -> int:
-    """TODO: description"""
+    """Looks for the text `http` in a tweet's content as a means of determining 
+        whether it contains a URL."""
     if (tweet_series['content'] is not None):
         return int(search_str in tweet_series['content'])
     else:
@@ -409,7 +423,7 @@ def convert_emoji_list(tweet_series: pd.Series) -> list:
 
 
 def emoji_count(tweet_series: pd.Series) -> int:
-    """TODO: description"""
+    """Counts the number of emoji in an `emoji_text` field."""
     return len(tweet_series['emoji_text'])
 
 
@@ -439,7 +453,9 @@ def reply_handle(tweet_series: pd.Series) -> str:
 
 
 def explode_url(url_text: str) -> dict:
-    """TODO: Description"""
+    """Breaks apart a string containing only a fully-qualified URL.
+        Returns the pieces of the URL as a dict. Refer to tldextract docs
+        for more information."""
     url_named_tuple: tldextract.ExtractResult = tldextract.extract(url_text)
 
     return {
@@ -451,7 +467,7 @@ def explode_url(url_text: str) -> dict:
 
 
 def capture_emojis_list(series_emojis):
-    ''' This function captures a list of emoji text (words) from a column in a dataframe'''
+    """Extracts lists from a series of lists."""
     t=[]
     for i in series_emojis:
         if len(i) >1:
@@ -460,7 +476,8 @@ def capture_emojis_list(series_emojis):
 
 
 def flatten_emoji_list(_2d_list):
-    ''' This function takes a nested list of emoji text and flattens the list for a dataframe'''
+    """This function takes a nested list of emoji text 
+        and flattens the list for a dataframe"""
     flat_list = []
     for element in _2d_list:
         if len(_2d_list)>0:

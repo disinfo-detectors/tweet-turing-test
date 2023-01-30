@@ -421,6 +421,11 @@ def convert_emoji_list(tweet_series: pd.Series) -> list:
         Duplicate emojis are captured as each emoji converts to 1 text string.'''
     return demoji.findall_list(tweet_series['content'])
 
+def convert_emoji_text(tweet_series: pd.Series) -> str:
+    ''' The following converts an emoji in a text string to a str '''
+    ##return demoji.replace_with_desc(tweet_series['content'], "'") 
+    return demoji.replace_with_desc(tweet_series['content'], " ") 
+
 
 def emoji_count(tweet_series: pd.Series) -> int:
     """Counts the number of emoji in an `emoji_text` field."""

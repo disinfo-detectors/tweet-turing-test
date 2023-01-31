@@ -1,6 +1,5 @@
 # tweet_turing.py
-#   A collection of functions used for the acquisition and pre-processing
-#   pipeline for the Tweet Turing Test project.
+#   A collection of functions used for the Tweet Turing Test project.
 #
 
 # imports from Python standard library
@@ -17,10 +16,6 @@ from google.oauth2 import service_account   # pip install google-auth
 import demoji                               # pip install demoji
 import numpy as np                          # pip install numpy
 import pandas as pd                         # pip install pandas
-
-# additional scripts
-import twittertext
-import tldextract
 
 
 # module-level definitions
@@ -425,45 +420,6 @@ def convert_emoji_list(tweet_series: pd.Series) -> list:
 def emoji_count(tweet_series: pd.Series) -> int:
     """Counts the number of emoji in an `emoji_text` field."""
     return len(tweet_series['emoji_text'])
-
-
-def char_count(tweet_series: pd.Series) -> int:
-    """Counts the number of characters in a tweet using an approximation of Twitter's specific counting method."""
-    return twittertext.get_tweet_char_count(tweet_series['content'])
-
-
-def retweet_handle(tweet_series: pd.Series) -> str:
-    """Returns the Twitter handle of the parent author of a retweeted tweet.
-        E.g. if @foo is retweeting a tweet by @bar with the text `RT @bar What is your name?`, returns `bar`."""
-    handle: str = twittertext.extract_first_handle_after_RT(tweet_series['content'])
-    if (handle is None):
-        return None
-    else:
-        return handle.lstrip('@')
-
-
-def reply_handle(tweet_series: pd.Series) -> str:
-    """Returns the Twitter handle of the parent author of a reply tweet.
-        E.g. if @foo is replying to a tweet by @bar with the text `@bar What is your quest?`, returns `bar`."""
-    handle: str = twittertext.extract_reply_screenname(tweet_series['content'])
-    if (handle is None):
-        return None
-    else:
-        return handle.lstrip('@')
-
-
-def explode_url(url_text: str) -> dict:
-    """Breaks apart a string containing only a fully-qualified URL.
-        Returns the pieces of the URL as a dict. Refer to tldextract docs
-        for more information."""
-    url_named_tuple: tldextract.ExtractResult = tldextract.extract(url_text)
-
-    return {
-            'subdomain': url_named_tuple.subdomain,
-            'domain': url_named_tuple.domain,
-            'tld': url_named_tuple.suffix,
-            'registered_domain': url_named_tuple.registered_domain
-        }
 
 
 def capture_emojis_list(series_emojis):

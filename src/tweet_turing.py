@@ -364,7 +364,7 @@ def set_gcp_object_from_df_as_parq(bucket: storage.Bucket, object_name: str, df:
     if (new_blob.exists()):
         pass    # do nothing, overwrite old version
 
-    df.to_parquet(new_blob.open("wb"), engine='pyarrow', index=False)
+    df.to_parquet(new_blob.open("wb"), engine='pyarrow', index=False, compression='gzip')
     
 
 def get_gcp_object_from_parq_as_df(bucket: storage.Bucket, object_name: str) -> pd.DataFrame:
@@ -415,6 +415,16 @@ def convert_emoji_list(tweet_series: pd.Series) -> list:
     ''' The following converts a text string with emojis into a list of descriptive text strings.
         Duplicate emojis are captured as each emoji converts to 1 text string.'''
     return demoji.findall_list(tweet_series['content'])
+
+
+def convert_emoji_text(tweet_series: pd.Series, enclosing_char: str = '') -> str:
+    ''' The following converts an emoji in a text string to a str '''
+    return demoji.replace_with_desc(tweet_series['content'], enclosing_char)
+
+
+def remove_emoji_text(tweet_series: pd.Series) -> str:
+    ''' The following removes emoji from a string. '''
+    return demoji.replace(tweet_series['content'], "")
 
 
 def emoji_count(tweet_series: pd.Series) -> int:

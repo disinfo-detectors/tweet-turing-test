@@ -3,6 +3,7 @@ key
 .key
 .vscode
 tests
+logs
 
 # Boilerplate .gitignore file from here down
 # Byte-compiled / optimized / DLL files

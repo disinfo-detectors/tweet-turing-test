@@ -1,6 +1,6 @@
 # Tweet Turing Test: Detecting disinformation on Twitter
 
-**Capstone Project for Master of Science in Data Science  - Fall 2022**  
+**Capstone Project for Master of Science in Data Science  - Fall 2022 / Winter 2023**  
 _College of Computing and Informatics - Drexel University - Philadelphia, PA USA_
 
 **Group Members:**
@@ -13,32 +13,46 @@ _College of Computing and Informatics - Drexel University - Philadelphia, PA USA
 As our capstone project for our respective Master of Science in Data Science degrees, our team is working to determine ways to detect disinformation on Twitter using machine learning and natual language processing techniques.
 
 ### Status
-This project is still in active development. Data acquisition and pre-processing will be completed during Q4 CY2022, while analysis and modeling will be completed during Q1 CY2023.
+This project is still in active development. Data acquisition and pre-processing was completed during Q4 CY2022, while analysis and modeling is being completed during Q1 CY2023.
 
 ## Requirements
 
 ### Environment
 The environments used for this project have:
-- Python 3.7+ (for compatibility with GCP Dataproc 2.0-series images)
+- Python 3.7+
 - Packages consistent with the included `requirements.txt` file.
+- Support for Jupyter notebooks
+- For modeling: an attached CUDA-enabled GPU with at least 8GB VRAM
 
 ### Packages
 The Python packages listed below are used to accomplish various portions of our project. Additional packages from the Python standard library are used but are not listed here.
 - [Demoji](https://pypi.org/project/demoji/) (for parsing emoji characters)
+- [ftfy](https://pypi.org/project/ftfy/) (for cleaning text)
 - NLTK (for natural language processing)
 - Numpy (to complement Pandas)
 - Pandas (for much of the heavy lifting)
 - Pyarrow (for Apache Parquet support)
+- [pynvml](https://pypi.org/project/pynvml/) (for monitoring GPU usage during training)
+- [regex](https://pypi.org/project/regex/) (for regular expressions)
+- [scikit-learn](https://pypi.org/project/scikit-learn/) (for ML utilities)
 - Seaborn + Matplotlib (for visualization)
 - [Squarify](https://pypi.org/project/squarify/) (for Treemap visualizations)
 - [tldextract](https://pypi.org/project/tldextract/) (for parsing URL text)
+- [🤗 Transformers](https://pypi.org/project/transformers/) (for fine-tuning and using BERT)
 - [tweet-counter](https://github.com/nottrobin/tweet-counter) (for more accurately counting Tweet character lengths)
+- [vaderSentiment](https://pypi.org/project/vaderSentiment/) (for sentiment analysis)
 - [wordcloud](https://pypi.org/project/wordcloud/) (for word cloud visualizations)
 
 We have setup portions of our code to be run on Google Cloud Platform (GCP) resources like Dataproc.
 In support of that, additional Python packages are required when executing code within GCP:
 - Google Cloud Client Libraries (Storage, Authentication)
 - Spark/PySpark (included with Dataproc)
+
+## Notebook Layout / Project Flow
+
+Our project's code is largely contained within Jupyter notebooks. Each notebook serves a specific purpose, building upon upstream notebooks and passing their progress along to downstream notebooks. The relative layout and overall flow of our project notebooks is summarized in the diagram below.
+
+![A flowchart showing how each notebook connects together](/docs/Notebook_Layout.png)
 
 ## License
 In accordance with the Twitter API terms of service, we are not permitted to share our acquired data in its raw form.

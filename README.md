@@ -1,4 +1,4 @@
-# Tweet Turing Test: Detecting disinformation on Twitter
+# Tweet Turing Test: Detecting Disinformation on Twitter
 
 **Capstone Project for Master of Science in Data Science  - Fall 2022 / Winter 2023**  
 _College of Computing and Informatics - Drexel University - Philadelphia, PA USA_
@@ -32,14 +32,14 @@ The Python packages listed below are used to accomplish various portions of our 
 - [Demoji](https://pypi.org/project/demoji/) (for parsing emoji characters)
 - [ftfy](https://pypi.org/project/ftfy/) (for cleaning text)
 - [multimodal-transformers](https://github.com/georgian-io/Multimodal-Toolkit) (for BERT+tabular transformer modeling)
-- NLTK (for natural language processing)
-- Numpy (to complement Pandas)
-- Pandas (for much of the heavy lifting)
-- Pyarrow (for Apache Parquet support)
+- [NLTK](https://www.nltk.org/) (for natural language processing)
+- [Numpy](https://numpy.org/) (to complement Pandas)
+- [Pandas](https://pandas.pydata.org/) (for much of the heavy lifting)
+- [Pyarrow](https://arrow.apache.org/docs/python/index.html) (for Apache Parquet support)
 - [pynvml](https://pypi.org/project/pynvml/) (for monitoring GPU usage during training)
 - [regex](https://pypi.org/project/regex/) (for regular expressions)
 - [scikit-learn](https://pypi.org/project/scikit-learn/) (for ML utilities)
-- Seaborn + Matplotlib (for visualization)
+- [Seaborn](https://seaborn.pydata.org/) + [Matplotlib](https://matplotlib.org/) (for visualization)
 - [Squarify](https://pypi.org/project/squarify/) (for Treemap visualizations)
 - [tldextract](https://pypi.org/project/tldextract/) (for parsing URL text)
 - [🤗 Transformers](https://pypi.org/project/transformers/) (for fine-tuning and using BERT)
